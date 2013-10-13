@@ -61,23 +61,15 @@ class GoogleLoginManager implements LoginManagerInterface
             $user = $this->googleAuthorizer->authorizeUser($authenticatedUser);
         } catch (FailureAuthorizedException $e) {
             if ( ! $this->googleRegisterManager->isUserAllowedToRegisterAutomatically($authenticatedUser)) {
-                $this->logger->addAlert("User authorization failed ");
-
                 throw new FailureAuthorizedException("XSolve Google Auth couldn't authorize user. User's domain is not allowed");
             }
-
-            $this->googleRegisterManager->registerUser($authenticatedUser);
-
-            $user = $authenticatedUser;
+            $user = $this->googleRegisterManager->registerUser($authenticatedUser);
         } catch (NotAuthorizedException $e) {
-            $this->logger->addInfo("User try to sign in");
-
+            $this->logger->addInfo("User tried to sign in");
             throw $e;
         }
 
         $user = $this->FOSUserLoginService->login($user);
-
-        $this->logger->addInfo(sprintf("User %s singed in", $user->getUsername()));
 
         return $user;
     }
