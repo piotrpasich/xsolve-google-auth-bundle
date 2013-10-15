@@ -29,11 +29,10 @@ class GoogleAuthorizationController extends Controller
 
             return $this->redirect($redirectManager->getSuccessRedirectUrl());
         } catch (FailureAuthorizedException $e) {
-
+            if (406 == $e->getCode()) {
+                return $this->redirect($redirectManager->getNotAuthorizedUrl());
+            }
             return $this->redirect($redirectManager->getFailureAuthorizedUrl());
-        } catch (NotAuthorizedException $e) {
-
-            return $this->redirect($redirectManager->getNotAuthorizedUrl());
         }
     }
 
